@@ -1,0 +1,117 @@
+﻿
+-----FUNÇÃO DE LIMPEZA DE TODO O FORMULÁRIO------
+Private Sub PLimpar()
+        For Each controle As Control In Me.Controls
+            If TypeOf controle Is TextBox Then
+                Dim txt As TextBox = TryCast(controle, TextBox)
+                txt.Text = String.Empty
+            End If
+        Next
+        For Each controle As Control In Me.Controls
+            If TypeOf controle Is ComboBox Then
+                Dim cbo As ComboBox = TryCast(controle, ComboBox)
+                cbo.SelectedIndex = -1
+            End If
+        Next
+        For Each controle As Control In Me.Controls
+            If TypeOf controle Is Label Then
+                Dim lbl As Label = TryCast(controle, Label)
+                'Restringir a limpeza à estes controles
+                If lbl.Name = "lblIdPix" Or lbl.Name = "lblNome" Or lbl.Name = "lblSobrenome" Or lbl.Name = "lblInst" Then
+                    lbl.Text = Nothing
+                End If
+            End If
+        Next
+        For Each controle As Control In Me.Controls
+            If TypeOf controle Is MaskedTextBox Then
+                Dim mtb As MaskedTextBox = TryCast(controle, MaskedTextBox)
+                mtb.Mask = ""
+                mtb.Clear()
+                mtb.Enabled = False
+            End If
+        Next
+        'Código para percorrer todas as linhas e achar a selecionada
+        For i = DataGridView1.Rows.Count - 1 To 0 Step -1
+            DataGridView1.Rows(i).Selected = False
+            DataGridView1.Rows(i).Cells(0).Value = 0
+        Next
+        result = False
+        txtDataR.Text = Today
+    End Sub
+    ---------------FUNÇÃO DE DADOS NUMA DATAGRIDVIEW DO FORMULÁRIO-------------------------
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Try
+            Dim n As Integer = 4
+            Dim quantidade(n) As Integer
+            Dim valor As Double = 0.18
+            Dim subtotal(n) As Double
+            Dim soma As Double
+            For i As Integer = 0 To n - 1
+                quantidade(i) = Val(InputBox("Digite um valor N°" & i + 1))
+            Next
+            For i As Integer = 0 To n - 1
+                subtotal(i) = quantidade(i) * valor
+                soma = soma + subtotal(i)
+            Next
+            grid1.Rows.Add(n + 1)
+            For r As Integer = 0 To n - 1
+                grid1.Item(0, r).Value = r + 1
+                grid1.Item(1, r).Value = Format(quantidade(r), "0.00")
+                grid1.Item(2, r).Value = Format(valor, "0.00")
+                grid1.Item(3, r).Value = Format(subtotal(r), "0.00")
+                grid1.Item(2, n).Value = "Total ==>"
+                grid1.Item(3, n).Value = Format(soma, "0.00")
+            Next
+        Catch ex As Exception
+            MessageBox.Show("Erro de: " & vbCrLf & ex.message)
+        End Try
+    End Sub
+    ---------------MODULO COM FUNÇÃO PARA DEPOSITAR E SACAR VALORES-------------------------
+Neste exemplo:
+A variável saldo armazena o saldo atual da conta.
+A função Depositar adiciona o valor ao saldo, desde que o valor seja positivo.
+A função Sacar subtrai o valor do saldo, desde que o valor seja positivo e não exceda o saldo disponível.
+A função ConsultarSaldo retorna o saldo atual.
+    Module Banco
+
+    ' Variável para armazenar o saldo
+    Private saldo As Decimal = 0
+
+    ' Função para depositar um valor
+    Public Sub Depositar(ByVal valor As Decimal)
+        If valor > 0 Then
+            saldo += valor
+            Console.WriteLine("Depósito realizado com sucesso. Saldo atual: " & saldo)
+        Else
+            Console.WriteLine("Valor de depósito inválido.")
+        End If
+    End Sub
+
+    ' Função para sacar um valor
+    Public Sub Sacar(ByVal valor As Decimal)
+        If valor > 0 AndAlso valor <= saldo Then
+            saldo -= valor
+            Console.WriteLine("Saque realizado com sucesso. Saldo atual: " & saldo)
+        Else
+            Console.WriteLine("Valor de saque inválido ou saldo insuficiente.")
+        End If
+    End Sub
+
+    ' Função para consultar o saldo atual
+    Public Function ConsultarSaldo() As Decimal
+        Return saldo
+    End Function
+    
+End Module
+---------------------------------CHAMAR A FUNÇÃO DO MODULO--------------------------
+Sub Main()
+    Banco.Depositar(100)
+    Banco.Sacar(50)
+    Console.WriteLine("Saldo final: " & Banco.ConsultarSaldo())
+End Sub
+
+Classes:
+Pessoal -ID,Nome,AnoNacimento,Dias,Cpf
+Bancos -Instituicao
+Agencias -CC
+Cartao -Cartao,Limite
